@@ -34,17 +34,17 @@ jobs:
           name: remittance-pricing-${{ github.run_id }}
           path: pricing_*.xlsx
           retention-days: 90
-
       - name: Send email with report
         if: always()
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Remittance Pricing Report - ${{ github.run_id }}"
-          to: isabel.mondshine@ftpartners.com      # ← CHANGE THIS to your email
-          from: FT Partners Pricer
-          body: "Daily remittance pricing report attached. Run date: $(date)"
+          server_address: smtp.office365.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Remittance Pricing Report"
+          to: isabel.mondshine@ftpartners.com
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: "Daily remittance pricing report is attached."
           attachments: pricing_*.xlsx
