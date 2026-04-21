@@ -1,0 +1,50 @@
+name: Daily Remittance Pricing
+
+on:
+  schedule:
+    - cron: '0 13 * * 1-5'   # Runs weekdays at 8 AM Eastern (1 PM UTC)
+  workflow_dispatch:           # Adds a manual "Run" button for testing
+
+jobs:
+  fetch-pricing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests openpyxl playwright
+          playwright install chromium
+
+      - name: Run pricing script
+        run: |
+          python remittance_pricer.py --output pricing_$(date +%Y%m%d).xlsx
+
+      - name: Upload Excel report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remittance-pricing-${{ github.run_id }}
+          path: pricing_*.xlsx
+          retention-days: 90
+
+      - name: Send email with report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Remittance Pricing Report - ${{ github.run_id }}"
+          to: isabel.mondshine@ftpartners.com      # ← CHANGE THIS to your email
+          from: FT Partners Pricer
+          body: "Daily remittance pricing report attached. Run date: $(date)"
+          attachments: pricing_*.xlsx
