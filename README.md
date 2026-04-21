@@ -1,4 +1,4 @@
-# FT Partners — Remittance Competitive Pricing Tracker
+#  Remittance Competitive Pricing Tracker
 ## Setup & Usage Guide
 
 ---
