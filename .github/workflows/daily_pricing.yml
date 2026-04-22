@@ -28,8 +28,7 @@ jobs:
           playwright install chromium
 
       - name: Run pricing script
-        run: |
-          python remittance_pricer.py --output pricing_$(date +%Y%m%d).xlsx
+        run: python remittance_pricer.py --output pricing_today.xlsx
 
       - name: Upload Excel report as artifact
         uses: actions/upload-artifact@v4
