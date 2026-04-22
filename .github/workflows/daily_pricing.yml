@@ -2,8 +2,11 @@ name: Daily Remittance Pricing
 
 on:
   schedule:
-    - cron: '0 13 * * 1-5'   # Runs weekdays at 8 AM Eastern (1 PM UTC)
-  workflow_dispatch:           # Adds a manual "Run" button for testing
+    - cron: '0 13 * * 1-5'
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   fetch-pricing:
@@ -34,17 +37,3 @@ jobs:
           name: remittance-pricing-${{ github.run_id }}
           path: pricing_*.xlsx
           retention-days: 90
-      - name: Send email with report
-        if: always()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.office365.com
-          server_port: 587
-          secure: false
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "Remittance Pricing Report"
-          to: isabel.mondshine@ftpartners.com
-          from: ${{ secrets.MAIL_USERNAME }}
-          body: "Daily remittance pricing report is attached."
-          attachments: pricing_*.xlsx
